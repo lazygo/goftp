@@ -112,6 +112,13 @@ func (sess *Session) PassivePort() int {
 		minPort, _ := strconv.Atoi(strings.TrimSpace(portRange[0]))
 		maxPort, _ := strconv.Atoi(strings.TrimSpace(portRange[1]))
 
+		if minPort == maxPort {
+			return maxPort
+		}
+		if minPort > maxPort {
+			maxPort, minPort = minPort, maxPort
+		}
+
 		return minPort + mrand.Intn(maxPort-minPort)
 	}
 	// let system automatically chose one port
@@ -255,16 +262,16 @@ func (sess *Session) BuildPath(filename string) string {
 // buildPath takes a client supplied path or filename and generates a safe
 // absolute path within their account sandbox.
 //
-//    buildpath("/")
-//    => "/"
-//    buildpath("one.txt")
-//    => "/one.txt"
-//    buildpath("/files/two.txt")
-//    => "/files/two.txt"
-//    buildpath("files/two.txt")
-//    => "/files/two.txt"
-//    buildpath("/../../../../etc/passwd")
-//    => "/etc/passwd"
+//	buildpath("/")
+//	=> "/"
+//	buildpath("one.txt")
+//	=> "/one.txt"
+//	buildpath("/files/two.txt")
+//	=> "/files/two.txt"
+//	buildpath("files/two.txt")
+//	=> "/files/two.txt"
+//	buildpath("/../../../../etc/passwd")
+//	=> "/etc/passwd"
 //
 // The driver implementation is responsible for deciding how to treat this path.
 // Obviously they MUST NOT just read the path off disk. The probably want to
